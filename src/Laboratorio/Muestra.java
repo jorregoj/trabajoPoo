@@ -1,5 +1,8 @@
 package Laboratorio;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class Muestra {
     private String codigoMuestra;
     private Lubricante lubricante;
@@ -7,10 +10,12 @@ public abstract class Muestra {
     private String codigoEquipo;
     private String codigoComponente;
     private String descripcionComponente;
-    private double viscosidad;
-    private double contenidoFe;
-    private double contenidoPb;
-    private double oxidacion;
+    private String Estado = "En proceso";
+    private double viscosidad=-1;
+    private double contenidoFe=-1;
+    private double contenidoPb=-1;
+    private double oxidacion=-1;
+
 
 
     public Muestra(String codigoMuestra, Lubricante lubricante, String fechaMuestreo, String codigoEquipo,
@@ -23,6 +28,7 @@ public abstract class Muestra {
         this.descripcionComponente = descripcionComponente;
     }
 
+    //Metodos para ingresar resultados de los ensayos
     public void ingresarViscosidad(double viscosidad){
         this.viscosidad = viscosidad;
     }
@@ -38,9 +44,15 @@ public abstract class Muestra {
     public void ingresarOxidacion(double oxidacion){
         this.oxidacion = oxidacion;
     }
+    /* Obtener estado de ensayos. En algunos casos dependera si la muestra es motor, o componente. En el caso de
+    la viscosidad, dependera del tipo de aceite. */
+
     public String verificarViscosidad(){
+        if(this.viscosidad<0){
+            return "En Proceso";
+        }
         double vnormal= lubricante.getViscosidadNormal();
-        double diferencia = Math.abs(vnormal-viscosidad);
+        double diferencia = Math.abs(vnormal-this.viscosidad);
         if(diferencia<=0.7){
             return "Normal";
         } else if(diferencia<=1.2){
@@ -48,23 +60,19 @@ public abstract class Muestra {
         } else return "Critico";
     }
 
-    public String verificarContenidoFe(){
-        if(contenidoFe>50){
-            return "Critico";
-        } else if(contenidoFe>25){
-            return "Precaucion";
-        } else return("Normal");
-    }
+    public abstract String verificarContenidoFe();
 
-    public String verificarContenidoPb(){
-        if(contenidoPb>10){
-            return "Critico";
-        } else if(contenidoFe>5){
-            return "Precaucion";
-        } else return("Normal");
-    }
+    public abstract String verificarContenidoPb();
 
     public abstract String verificarOxidacion();
+
+    //Método para obtener estado de la muestra
+
+    public abstract List<String> listaEstados();
+
+    public abstract String obtenerEstado();
+
+    //getters & setters
 
     public String getCodigoMuestra() {
         return codigoMuestra;
@@ -146,4 +154,5 @@ public abstract class Muestra {
     public void setOxidacion(double oxidacion) {
         this.oxidacion = oxidacion;
     }
+
 }
